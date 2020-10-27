@@ -1,11 +1,9 @@
 # Esa
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/rokasma/esa.svg?style=flat-square)](https://packagist.org/packages/rokasma/esa)
-[![Build Status](https://img.shields.io/travis/rokasma/esa/master.svg?style=flat-square)](https://travis-ci.org/rokasma/esa)
-[![Quality Score](https://img.shields.io/scrutinizer/g/rokasma/esa.svg?style=flat-square)](https://scrutinizer-ci.com/g/rokasma/esa)
 [![Total Downloads](https://img.shields.io/packagist/dt/rokasma/esa.svg?style=flat-square)](https://packagist.org/packages/rokasma/esa)
 
-ESA plugin let's you post data to smartsheet and send emails.
+Laravel ESA plugin let's you post data to smartsheet and send emails.
 
 ## Installation
 
@@ -14,6 +12,11 @@ You can install the package via composer:
 ```bash
 composer require rokasma/esa
 ```
+
+## Prerequisites
+
+* Laravel 7
+* Laravel 8
 
 ## Usage
 
