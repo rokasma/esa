@@ -18,7 +18,7 @@ return [
     /**
      * Enter email default subject
      */
-    'email_subject' => 'Registracija',
+    'email_subject' => '',
 
 
 

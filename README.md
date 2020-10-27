@@ -21,7 +21,7 @@ composer require rokasma/esa
 ## Usage
 
 ``` php
-// Usage description here
+php artisan vendor:publish --provider="Rokasma\Esa\EsaServiceProvider" --tag="config"
 ```
 
 ### Testing
