@@ -17,16 +17,31 @@ class EsaController extends Controller
 
     public function init(Request $request)
     {
-        if (empty($request->input('sheet-id'))) {
+        $data = json_decode($request->getContent(), true);
+
+        if (empty($data[0]['sheet-id'])) {
+
             return response()->json(['error' => 'Sheet ID is not defined!']);
+
         } else {
-            $this->sheet_id = $request->input('sheet-id');
 
-            $this->formatFormData($request->except('sheet-id'));
+            $this->sheet_id = $data[0]['sheet-id'];
+            unset($data[0]);
 
-            $res = $this->getColumns();
+            $dataWithoutSheet = $data;
 
-            return $res;
+            if ($this->formatFormData($dataWithoutSheet)) {
+
+                $res = $this->getColumns();
+
+                return $res;
+
+            } else {
+
+                return response()->json(['error' => 'Could not validate data']);
+
+            }
+
         }
     }
 
@@ -51,6 +66,11 @@ class EsaController extends Controller
 
             if ($validateFields) {
                 $postdata = $this->postToSmartsheet();
+
+                // if (config('esa.send_email') && !empty(config('esa.email_to'))) {
+                //     return 'ok';
+                // }
+
                 return response()->json($postdata);
             }
 
@@ -65,7 +85,8 @@ class EsaController extends Controller
 
         for ($c=0; $c < $howmany; $c++) {
 
-            $column = new Column('Column' . $c, 'TEXT_NUMBER', count($this->formdata));
+            $columnTitle = count($this->columns) . $this->getRandomString(10);
+            $column = new Column($columnTitle, 'TEXT_NUMBER', count($this->formdata));
     
             $response = Http::withHeaders(['Content-Type' => 'application/json', 'Authorization' => 'Bearer ' . config('esa.api_key')])->post($this->base_url . 'sheets/' . $this->sheet_id . '/columns', [
                 'title' => $column->title,
@@ -93,7 +114,7 @@ class EsaController extends Controller
         for ($i=0; $i < count($this->formdata); $i++) {
 
             $columnid = $this->columns[$i];
-            $value = $this->formdata[$i];
+            $value = $this->formdata[$i]['value'];
 
             $cell = [
                 'columnId' => $columnid,
@@ -121,8 +142,14 @@ class EsaController extends Controller
 
     public function formatFormData($data)
     {
-        foreach ($data as $dt => $value) {
-            array_push($this->formdata, $value);
+        foreach ($data as $value) {
+
+            $node = [
+                'title' => $value['column']['title'],
+                'value' => $value['column']['value']
+            ];
+
+            array_push($this->formdata, $node);
         }
 
         return true;
@@ -145,5 +172,17 @@ class EsaController extends Controller
         }
 
         return true;
+    }
+
+    public function getRandomString($n) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $randomString = '';
+      
+        for ($i = 0; $i < $n; $i++) {
+            $index = rand(0, strlen($characters) - 1);
+            $randomString .= $characters[$index];
+        }
+      
+        return $randomString;
     }
 }
