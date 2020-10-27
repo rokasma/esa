@@ -15,7 +15,7 @@ class EsaServiceProvider extends ServiceProvider
          * Optional methods to load your package assets
          */
         // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'esa');
-        // $this->loadViewsFrom(__DIR__.'/../resources/views', 'esa');
+        $this->loadViewsFrom(__DIR__.'/../src/views', 'esa');
         // $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         $this->loadRoutesFrom(__DIR__.'/routes.php');
 

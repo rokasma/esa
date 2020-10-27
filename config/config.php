@@ -16,6 +16,13 @@ return [
 
 
     /**
+     * Enter email default subject
+     */
+    'email_subject' => 'Registracija',
+
+
+
+    /**
      * Enter reveiver.
      */
     'email_to' => '',

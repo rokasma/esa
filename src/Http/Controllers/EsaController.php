@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
 use Rokasma\Esa\Column;
+use Rokasma\Esa\Mail\DataMailable;
 
 class EsaController extends Controller
 {
@@ -67,11 +68,12 @@ class EsaController extends Controller
             if ($validateFields) {
                 $postdata = $this->postToSmartsheet();
 
-                // if (config('esa.send_email') && !empty(config('esa.email_to'))) {
-                //     return 'ok';
-                // }
+                if (config('esa.send_email') && !empty(config('esa.email_to'))) {
+                    $emailsent = $this->sendEmail();
+                    return response()->json(['success' => $emailsent]);
+                }
 
-                return response()->json($postdata);
+                return response()->json(['success' => $postdata]);
             }
 
         } else {
@@ -132,7 +134,7 @@ class EsaController extends Controller
 
         if ($response->ok()) {
 
-            return (object) $response->json();
+            return true;
             
         } else {
             $response->throw();
@@ -184,5 +186,12 @@ class EsaController extends Controller
         }
       
         return $randomString;
+    }
+
+    public function sendEmail()
+    {
+        Mail::to(config('esa.email_to'))->send(new DataMailable($this->formdata));
+
+        return true;
     }
 }
