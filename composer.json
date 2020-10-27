@@ -1,0 +1,54 @@
+{
+    "name": "rokasma/esa",
+    "description": "ESA plugin let's you post data to smartsheet and send email.",
+    "keywords": [
+        "rokasma",
+        "esa"
+    ],
+    "homepage": "https://github.com/rokasma/esa",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Rokas Martusevičius",
+            "email": "rksmartus@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.1",
+        "illuminate/support": "^6.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^4.0",
+        "phpunit/phpunit": "^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Rokasma\\Esa\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Rokasma\\Esa\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Rokasma\\Esa\\EsaServiceProvider"
+            ],
+            "aliases": {
+                "Esa": "Rokasma\\Esa\\EsaFacade"
+            }
+        }
+    }
+}
