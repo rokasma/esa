@@ -20,16 +20,34 @@ composer require rokasma/esa
 
 ## Usage
 
+Publish config file and enter API Key into it.
 ``` php
 php artisan vendor:publish --provider="Rokasma\Esa\EsaServiceProvider" --tag="config"
 ```
 
-### Testing
+* Then posting sheet-id is required as first.
+* Post your json data to /esa route. 
 
-``` bash
-composer test
+Example post request:
 ```
-
+[
+    {
+        "sheet-id": "123456789"
+    },
+    {
+        "column": {
+            "title": "My Title",
+            "value": "foo"
+        }
+    },
+    {
+        "column": {
+            "title": "My Title 2",
+            "value": "bar"
+        }
+    }
+]
+```
 ### Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.

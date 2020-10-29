@@ -33,9 +33,7 @@ class EsaController extends Controller
 
             if ($this->formatFormData($dataWithoutSheet)) {
 
-                $res = $this->getColumns();
-
-                return $res;
+                return $this->getColumns();
 
             } else {
 
@@ -56,7 +54,7 @@ class EsaController extends Controller
         if ($response->ok()) {
 
             $content = (object) $response->json();
-    
+
             foreach ($content->columns as $column) {
                 if ($column['type'] === 'TEXT_NUMBER') {
                     array_push($this->columns, $column['id']);
@@ -66,41 +64,42 @@ class EsaController extends Controller
             $validateFields = $this->compareFieldLength();
 
             if ($validateFields) {
-                $postdata = $this->postToSmartsheet();
+                $post_data = $this->postToSmartsheet();
 
                 if (config('esa.send_email') && !empty(config('esa.email_to'))) {
-                    $emailsent = $this->sendEmail();
-                    return response()->json(['success' => $emailsent]);
+                    $sent = $this->sendEmail();
+                    return response()->json(['success' => $sent]);
                 }
 
-                return response()->json(['success' => $postdata]);
+                return response()->json(['success' => $post_data]);
             }
 
         } else {
             $response->throw();
         }
+        return response()->json(['message' => 'success']);
     }
 
-    public function createColumn($howmany)
+    public function createColumn($how_many)
     {
         $created = [];
 
-        for ($c=0; $c < $howmany; $c++) {
+        for ($c=0; $c < $how_many; $c++) {
 
             $columnTitle = count($this->columns) . $this->getRandomString(10);
             $column = new Column($columnTitle, 'TEXT_NUMBER', count($this->formdata));
-    
+
             $response = Http::withHeaders(['Content-Type' => 'application/json', 'Authorization' => 'Bearer ' . config('esa.api_key')])->post($this->base_url . 'sheets/' . $this->sheet_id . '/columns', [
                 'title' => $column->title,
                 'type' => $column->type,
                 'index' => $column->index
             ]);
-    
-            if ($response->ok()) {
-                $createdColumn = (object) $response->json();
 
-                $columnid = $createdColumn->result['id'];
-                array_push($created, $columnid);
+            if ($response->ok()) {
+                $created_Column = (object) $response->json();
+
+                $column_id = $created_Column->result['id'];
+                array_push($created, $column_id);
             } else {
                 $response->throw();
             }
@@ -115,16 +114,16 @@ class EsaController extends Controller
 
         for ($i=0; $i < count($this->formdata); $i++) {
 
-            $columnid = $this->columns[$i];
+            $column_id = $this->columns[$i];
             $value = $this->formdata[$i]['value'];
 
             $cell = [
-                'columnId' => $columnid,
+                'columnId' => $column_id,
                 'value' => $value
             ];
 
             array_push($cells, $cell);
-            
+
         }
 
         $response = Http::withHeaders(['Content-Type' => 'application/json', 'Authorization' => 'Bearer ' . config('esa.api_key')])->post($this->base_url . 'sheets/' . $this->sheet_id . '/rows', [
@@ -135,11 +134,12 @@ class EsaController extends Controller
         if ($response->ok()) {
 
             return true;
-            
+
         } else {
             $response->throw();
         }
 
+        return response()->json(['message' => 'success']);
     }
 
     public function formatFormData($data)
@@ -162,12 +162,12 @@ class EsaController extends Controller
         if (count($this->columns) < count($this->formdata)) {
 
             $dif = count($this->formdata) - count($this->columns);
-            $createdcolumn = $this->createColumn($dif);
+            $created_column = $this->createColumn($dif);
 
-            if (empty($createdcolumn)) {
+            if (empty($created_column)) {
                 return response()->json(['error' => 'Created columns array is empty!']);
             } else {
-                foreach ($createdcolumn as $col) {
+                foreach ($created_column as $col) {
                     array_push($this->columns, $col);
                 }
             }
@@ -179,12 +179,12 @@ class EsaController extends Controller
     public function getRandomString($n) {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $randomString = '';
-      
+
         for ($i = 0; $i < $n; $i++) {
             $index = rand(0, strlen($characters) - 1);
             $randomString .= $characters[$index];
         }
-      
+
         return $randomString;
     }
 
